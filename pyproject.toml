@@ -1,0 +1,21 @@
+[project]
+name = "mlp"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Gilmar Júnior",email = "gilmar.junior@virtual360.io"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy (>=2.2.3,<3.0.0)",
+    "matplotlib (>=3.10.1,<4.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "mlp", from = "src"}]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
