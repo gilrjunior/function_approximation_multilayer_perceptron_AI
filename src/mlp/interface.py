@@ -88,29 +88,35 @@ def interface():
     learning_rate_entry = ttk.Entry(frm, style="Rounded.TEntry", width=25, font=("Arial", 12))
     learning_rate_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
 
+    error_label = ttk.Label(frm, text="Erro Máximo Tolerado:")
+    error_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+
+    error_entry = ttk.Entry(frm, style="Rounded.TEntry", width=25, font=("Arial", 12))
+    error_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+
     number_neurons_label = ttk.Label(frm, text="Quantidade de Neuronios:")
-    number_neurons_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+    number_neurons_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
 
     number_neurons_entry = ttk.Entry(frm, style="Rounded.TEntry", width=25, font=("Arial", 12))
-    number_neurons_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+    number_neurons_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 
     sample_size_label = ttk.Label(frm, text="Tamanho da Amostra:")
-    sample_size_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+    sample_size_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
 
     sample_size_entry = ttk.Entry(frm, style="Rounded.TEntry", width=25, font=("Arial", 12))
-    sample_size_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+    sample_size_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
 
     x_min_label = ttk.Label(frm, text="Valor Mínimo de X:")
-    x_min_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+    x_min_label.grid(row=4, column=0, padx=5, pady=5, sticky="w")
 
     x_min_entry = ttk.Entry(frm, style="Rounded.TEntry", width=25, font=("Arial", 12))
-    x_min_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+    x_min_entry.grid(row=4, column=1, padx=5, pady=5, sticky="w")
 
     x_max_label = ttk.Label(frm, text="Valor Máximo de X:")
-    x_max_label.grid(row=4, column=0, padx=5, pady=5, sticky="w")
+    x_max_label.grid(row=5, column=0, padx=5, pady=5, sticky="w")
 
     x_max_entry = ttk.Entry(frm, style="Rounded.TEntry", width=25, font=("Arial", 12))
-    x_max_entry.grid(row=4, column=1, padx=5, pady=5, sticky="w")
+    x_max_entry.grid(row=5, column=1, padx=5, pady=5, sticky="w")
 
     bottom_frm = ttk.Frame(container, style="TFrame")
     bottom_frm.pack(anchor="center")
@@ -120,6 +126,6 @@ def interface():
                      style="Red.TButton",
                      width=20,
                      command=lambda: start_model(matrix, madaline, letter_text_label))
-    v_btn.grid(row=4, column=0, columnspan=3, padx=5, pady= 10, sticky="w")
+    v_btn.grid(row=6, column=0, columnspan=3, padx=5, pady= 10, sticky="w")
 
     root.mainloop()
