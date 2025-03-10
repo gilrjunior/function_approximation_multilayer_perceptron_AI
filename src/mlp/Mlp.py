@@ -45,7 +45,7 @@ class Mlp:
         entries = len(self.inputs)
 
         for i in range(self.number_neurons):
-            self.wi[i] = selfrd.uniform(-0.5, 0.5)
+            self.wi[i] = rd.uniform(-0.5, 0.5)
         
         while epochs <= 1000:
 
