@@ -82,11 +82,11 @@ def interface():
     frm = ttk.Frame(container, padding=10, style="TFrame")
     frm.pack(anchor="center")
 
-    learn_rate_label = ttk.Label(frm, text="Taxa de Aprendizado:")
-    learn_rate_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+    learning_rate_label = ttk.Label(frm, text="Taxa de Aprendizado:")
+    learning_rate_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
-    learn_rate_entry = ttk.Entry(frm, style="Rounded.TEntry", width=25, font=("Arial", 12))
-    learn_rate_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+    learning_rate_entry = ttk.Entry(frm, style="Rounded.TEntry", width=25, font=("Arial", 12))
+    learning_rate_entry.grid(row=0, column=1, padx=5, pady=5, sticky="w")
 
     number_neurons_label = ttk.Label(frm, text="Quantidade de Neuronios:")
     number_neurons_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
