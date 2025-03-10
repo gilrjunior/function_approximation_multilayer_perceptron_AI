@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pkl
+
+# Distribuição / pacotes
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments (incluindo o que o Poetry pode criar)
+.env
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Diretório gerado pelo Poetry (caso use .venv local)
+.poetry/
+
+# Test caches
+.pytest_cache/
+.coverage
+.coverage.*
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+
+# Ferramentas de build/IDE
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
