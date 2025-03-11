@@ -55,9 +55,10 @@ class Mlp:
 
                 z = self.inputs[i]
 
-                while j in range(self.number_neurons):
+                while j in range(self.number_neurons): # --> Inicializar a variável j
+                    # Porque usou while?
 
-                    zin = self.vi + self.wi[j] * z
+                    zin = self.vi + self.wi[j] * z 
 
                     z = np.tanh(zin)
 
