@@ -3,42 +3,138 @@ import random as rd
 import matplotlib.pyplot as plt
 
 class Mlp:
-
     def __init__(self, number_neurons, sample_size, x_min, x_max, learning_rate):
         self.number_neurons = number_neurons
         self.sample_size = sample_size
         self.x_min = x_min
         self.x_max = x_max
         self.learning_rate = learning_rate
-        self.vi = np.random.uniform(-0.5, 0.5, self.number_neurons) # Bias dos neurônios da camada oculta
-        self.wi = np.random.uniform(-0.5, 0.5, self.number_neurons) # Pesos da camada de entrada x oculta
-        self.vy = rd.uniform(-0.5, 0.5) # Bias do neurônio de saída
-        self.wy = np.random.uniform(-0.5, 0.5, self.number_neurons) # Pesos da camada oculta x saída
-        self.threshold = 0.0
+        
+        # Camada oculta: vi (bias) e wi (pesos) - cada um com shape (N,)
+        self.vi = np.random.uniform(-0.5, 0.5, self.number_neurons)
+        self.wi = np.random.uniform(-0.5, 0.5, self.number_neurons)
+        
+        # Camada de saída: vy (bias) escalar e wy (pesos) com shape (N,)
+        self.vy = rd.uniform(-0.5, 0.5)
+        self.wy = np.random.uniform(-0.5, 0.5, self.number_neurons)
+
         self.inputs = self.get_inputs(x_min, x_max, sample_size)
         self.targets = self.get_targets(self.inputs)
 
-        """
-        Comentário importante:
-        No vídeo do zequinha a correção dos pesos é feita somando à matriz de correção, mas o algoritmo necessita de subtrair o gradiente,
-        efetivamente fazendo o gradiente descendente. A correção dos pesos está correta, mas a forma de atualização dos pesos está errada.
-        Isso é o que pesquisamos e é uma dúvida pertinente.
-        """
-
     def get_inputs(self, x_min, x_max, sample_size):
-
+        # Retorna um array 1D de amostras entre x_min e x_max
         return np.linspace(x_min, x_max, sample_size)
 
     def get_targets(self, inputs):
-
-        targets = np.array([])
-
+        # Gera os valores desejados (targets) para cada entrada
+        # f(x) = sin(x/2)*cos(2x)
+        targets = []
         for x in inputs:
-            targets = np.append(targets, np.sin(x/2)*np.cos(2*x))
+            targets.append(np.sin(x/2)*np.cos(2*x))
+        return np.array(targets)
+    
+    def forward(self, x):
+        # 1) Camada oculta
+        zin = []
+        for j in range(self.number_neurons):
+            net_in_j = self.vi[j] + self.wi[j] * x
+            z_out_j = np.tanh(net_in_j)
+            zin.append(z_out_j)  # Reaproveitando o array zin só para exemplo
 
-        return targets
+        # 2) Camada de saída
+        sum_value = 0.0
+        for k in range(self.number_neurons):
+            sum_value += zin[k] * self.wy[k]
+        yin = self.vy + sum_value
+        y = np.tanh(yin)
+        return y
+    
+    def get_approximation(self):
+        outputs = []
+        for x in self.inputs:
+            y = self.forward(x)
+            outputs.append(y)
+        return np.array(outputs)
 
-    def train(self, min_error, update_callback = None):
+    def optimized_train(self, min_error, update_callback=None, should_stop_callback=None):
+        epochs = 0
+        number_entries = len(self.inputs)
+        error_history = []
+
+        while epochs <= 10000:
+            epochs += 1
+            epoch_error = 0.0
+
+            # Loop por amostra
+            for i in range(number_entries):
+                x = self.inputs[i]
+                t = self.targets[i]
+
+                # Feedforward
+                # net_in (shape: (N,)) = bias + peso * x
+                net_in = self.vi + self.wi * x
+                # z (shape: (N,)) = tanh(net_in)
+                z = np.tanh(net_in)
+
+                # Saída: soma ponderada + bias
+                # sum_value é escalar = z . wy
+                sum_value = np.dot(z, self.wy)
+                yin = self.vy + sum_value
+                y = np.tanh(yin)
+
+                # Erro quadrático para essa amostra
+                sample_error = 0.5 * (y - t)**2
+                epoch_error += sample_error
+
+                # BACKPROPAGATION (cálculo dos gradientes)
+                # delta_k = (y - t) * derivada da tanh(yin)
+                delta_k = (y - t) * (1 - y**2)  # pois y = tanh(yin), deriv = (1 - tanh^2(yin))
+
+                # Camada de saída (oculta -> saída)
+                # gradientes: delta_wy (shape: (N,)) e delta_vy (escalar)
+                delta_wy = self.learning_rate * delta_k * z
+                delta_vy = self.learning_rate * delta_k
+
+                # Atualização
+                self.wy -= delta_wy
+                self.vy -= delta_vy
+
+                # Camada oculta (entrada -> oculta)
+                # erro que chega a cada neurônio oculto j: delta_in_j = wy[j] * delta_k
+                delta_in = self.wy * delta_k  # shape: (N,)
+                # derivada da tanh(net_in[j]) = (1 - z[j]^2)
+                delta_j = delta_in * (1 - z**2)  # shape: (N,)
+
+                # gradiente dos pesos de entrada
+                # wi[j] recebe a correção: eta * delta_j[j] * x
+                delta_wi = self.learning_rate * delta_j * x  # shape: (N,)
+                # gradiente do bias
+                delta_vi = self.learning_rate * delta_j      # shape: (N,)
+
+                # Atualiza
+                self.wi -= delta_wi
+                self.vi -= delta_vi
+
+            # Armazena erro total da época
+            error_history.append(epoch_error)
+
+            # Callback para atualizar interface (se houver)
+            if update_callback:
+                approx = self.get_approximation()
+                update_callback(epochs, error_history, approx)
+
+            # Verifica se devemos parar (se o usuário clicou em "Parar")
+            if should_stop_callback and should_stop_callback():
+                print("Treinamento interrompido pelo usuário.")
+                break
+
+            # Critério de parada
+            if epoch_error <= min_error:
+                break
+
+        print("Treinamento finalizado em", epochs, "épocas.")
+
+    def train(self, min_error, update_callback=None, should_stop_callback=None):
 
         epochs = 0
         number_entries = len(self.inputs)
@@ -114,6 +210,21 @@ class Mlp:
                     self.wi[j] -= delta_wi
                     self.vi[j] -= delta_vi
 
-            # Se o erro da época for menor que min_error, paramos
+            # Armazena erro total da época
+            error_history.append(epoch_error)
+
+            # Callback para atualizar interface (se houver)
+            if update_callback:
+                approx = self.get_approximation()
+                update_callback(epochs, error_history, approx)
+
+            # Verifica se devemos parar (se o usuário clicou em "Parar")
+            if should_stop_callback and should_stop_callback():
+                print("Treinamento interrompido pelo usuário.")
+                break
+
+            # Critério de parada
             if epoch_error <= min_error:
                 break
+
+        print("Treinamento finalizado em", epochs, "épocas.")
