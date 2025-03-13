@@ -2,14 +2,16 @@ import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import threading
+import os
 
-from mlp.Mlp import Mlp  # Import da classe Mlp no mesmo pacote mlp
+from Mlp import * # Import da classe Mlp no mesmo pacote mlp
 
 class Interface:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Multilayer Perceptron")
-        self.root.geometry("1200x800")
+        self.root.geometry("1300x900")
         self.root.configure(bg="#F0F0F0")
 
         # Flag para indicar se está treinando
@@ -148,7 +150,7 @@ class Interface:
 
     def create_graphs(self):
         # Gráfico verdadeiro
-        self.fig_true, self.ax_true = plt.subplots(figsize=(5, 4))
+        self.fig_true, self.ax_true = plt.subplots(figsize=(6, 6))
         self.ax_true.set_title("Gráfico verdadeiro")
         self.ax_true.set_xlabel("X - Entrada")
         self.ax_true.set_ylabel("Y - Saída")
@@ -156,7 +158,7 @@ class Interface:
         self.canvas_true.get_tk_widget().pack()
 
         # Gráfico sobreposto
-        self.fig_overlap, self.ax_overlap = plt.subplots(figsize=(5, 4))
+        self.fig_overlap, self.ax_overlap = plt.subplots(figsize=(6, 6))
         self.ax_overlap.set_title("Gráfico Sobreposto (Verdadeiro vs MLP)")
         self.ax_overlap.set_xlabel("X - Entrada")
         self.ax_overlap.set_ylabel("Y - Saída")
@@ -164,7 +166,7 @@ class Interface:
         self.canvas_overlap.get_tk_widget().pack()
 
         # Gráfico de Erro x Épocas
-        self.fig_error, self.ax_error = plt.subplots(figsize=(5, 4))
+        self.fig_error, self.ax_error = plt.subplots(figsize=(6, 6))
         self.ax_error.set_title("Erro x Épocas")
         self.ax_error.set_xlabel("Épocas")
         self.ax_error.set_ylabel("Erro")
@@ -173,6 +175,22 @@ class Interface:
 
     def stop_training(self):
         self.stop_training_flag = True
+        self.is_training = False
+
+    def on_closing(self):
+        """Força o encerramento do aplicativo ao fechar a janela."""
+        print("Fechando o aplicativo...")
+
+        self.stop_training_flag = True  # Sinaliza para parar o treinamento
+
+        if hasattr(self, "training_thread") and self.training_thread.is_alive():
+            print("Aguardando thread finalizar...")
+            self.training_thread.join(timeout=2)  # Espera no máximo 2 segundos para encerrar
+
+        self.root.destroy()  # Fecha a janela do Tkinter
+        print("Aplicação encerrada.")
+
+        os._exit(0)  # Mata o processo Python imediatamente
 
     def should_stop(self):
         return self.stop_training_flag
@@ -201,18 +219,23 @@ class Interface:
         self.mlp = Mlp(num_neurons, sample_size, x_min, x_max, lr)
 
         # Constrói o gráfico de targets
+        self.ax_true.clear()
+        self.ax_true.set_title("Gráfico verdadeiro")
+        self.ax_true.set_xlabel("X - Entrada")
+        self.ax_true.set_ylabel("Y - Saída")
         self.ax_true.plot(self.mlp.inputs, self.mlp.targets, 'b-', label='Função Real')
         self.canvas_true.draw()
 
         # Inicia o treinamento e passa o callback
-        self.mlp.optimized_train(
-            min_error, 
-            update_callback=self.update_training_status, 
-            should_stop_callback=self.should_stop
-            )
+        # Criar uma thread separada para rodar o treinamento
+        training_thread = threading.Thread(
+            target=self.mlp.optimized_train,
+            args=(min_error, self.update_training_status, self.should_stop),
+            daemon=True  # Thread daemon para encerrar automaticamente quando o programa fechar
+        )
 
-        self.is_training = False
-        self.stop_training_flag = True
+        training_thread.start()
+
 
     def update_training_status(self, epoch, error_history, approx):
         """
@@ -249,4 +272,5 @@ class Interface:
         self.root.update_idletasks()
 
     def run(self):
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.root.mainloop()
