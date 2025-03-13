@@ -205,7 +205,7 @@ class Interface:
         self.canvas_true.draw()
 
         # Inicia o treinamento e passa o callback
-        self.mlp.train(
+        self.mlp.optimized_train(
             min_error, 
             update_callback=self.update_training_status, 
             should_stop_callback=self.should_stop
@@ -221,7 +221,7 @@ class Interface:
         # Atualiza o rótulo de época
         self.epoch_label.config(text=f"Época: {epoch}")
 
-        self.error_label.config(text=f"Erro: {error_history[-1]}")
+        self.error_label.config(text=f"Erro: {error_history[-1]:.4f}")
 
         # Atualiza o gráfico de erro
         self.ax_error.clear()
