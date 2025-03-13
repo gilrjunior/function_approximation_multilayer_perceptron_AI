@@ -1,17 +1,10 @@
-from interface import *
-import numpy as np
-from Mlp import *
+# src/mlp/main.py
+
+from mlp.interface import Interface
 
 def main():
-    
-    mlp = Mlp(0, 10, 10, 100, 0.01)
+    app = Interface()
+    app.run()
 
-    print(mlp.inputs)
-    print(mlp.targets)
-    print(mlp.inputs-mlp.targets)
-    print(np.shape(mlp.inputs))
-
-    interface()
-    
 if __name__ == "__main__":
-        main()
+    main()
