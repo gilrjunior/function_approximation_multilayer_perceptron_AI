@@ -219,6 +219,7 @@ class Interface:
         self.mlp = Mlp(num_neurons, sample_size, x_min, x_max, lr)
 
         # Constrói o gráfico de targets
+        self.ax_true.clear()
         self.ax_true.plot(self.mlp.inputs, self.mlp.targets, 'b-', label='Função Real')
         self.canvas_true.draw()
 
