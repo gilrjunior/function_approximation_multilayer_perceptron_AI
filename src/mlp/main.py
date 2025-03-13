@@ -1,6 +1,6 @@
 # src/mlp/main.py
 
-from mlp.interface import Interface
+from interface import Interface
 
 def main():
     app = Interface()
