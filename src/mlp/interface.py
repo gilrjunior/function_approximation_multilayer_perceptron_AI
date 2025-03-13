@@ -13,8 +13,10 @@ class Interface:
         self.root.configure(bg="#F0F0F0")
 
         # Flag para indicar se está treinando
-
         self.is_training = False
+
+        # Flag para parar treinamento
+        self.stop_training_flag = False
 
         self.setup_styles()
         self.create_frames()
@@ -133,14 +135,14 @@ class Interface:
         )
         btn_approx.grid(row=len(labels_and_defaults), column=0, columnspan=2, padx=5, pady=10, sticky="w")
 
-        # Label para exibir mensagens em vermelho ao lado do botão
-        self.training_message = ttk.Label(
-            self.frame_controls, 
-            text="",         # Começa vazio
-            foreground="red" # Texto em vermelho
+        # Botão para Parar Treinamento
+        btn_stop = ttk.Button(
+            self.frame_controls,
+            text="Parar",
+            width=20,
+            command=self.stop_training
         )
-        # Posiciona esse Label na mesma linha, mas em outra coluna
-        self.training_message.grid(row=len(labels_and_defaults), column=1, padx=5, pady=10, sticky="w")
+        btn_stop.grid(row=len(labels_and_defaults), column=1, columnspan=1, padx=5, pady=10, sticky="w")
 
         
 
@@ -169,14 +171,23 @@ class Interface:
         self.canvas_error = FigureCanvasTkAgg(self.fig_error, master=self.frame_error)
         self.canvas_error.get_tk_widget().pack()
 
+    def stop_training(self):
+        self.stop_training_flag = True
+
+    def should_stop(self):
+        return self.stop_training_flag
+
     def start_training(self):
         # Se já estiver treinando, não faz nada (ou avisa o usuário)
         if self.is_training:
             print("Já existe um treinamento em andamento.")
             return
         
-        self.epoch_label.config(text="Época: 0")
-        self.error_label.config(text="Erro: 0")
+        self.stop_training_flag = False
+        self.is_training = True
+        
+        self.epoch_label.config(text="Época: 0  ")
+        self.error_label.config(text="Erro: 0  ")
         
         # Lê os parâmetros
         lr = float(self.entries["Taxa de Aprendizado:"].get())
@@ -191,9 +202,17 @@ class Interface:
 
         # Constrói o gráfico de targets
         self.ax_true.plot(self.mlp.inputs, self.mlp.targets, 'b-', label='Função Real')
+        self.canvas_true.draw()
 
         # Inicia o treinamento e passa o callback
-        self.mlp.train(min_error, update_callback=self.update_training_status)
+        self.mlp.train(
+            min_error, 
+            update_callback=self.update_training_status, 
+            should_stop_callback=self.should_stop
+            )
+
+        self.is_training = False
+        self.stop_training_flag = True
 
     def update_training_status(self, epoch, error_history, approx):
         """
