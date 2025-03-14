@@ -83,12 +83,12 @@ class Mlp:
                 y = np.tanh(yin)
 
                 # Erro quadrático para essa amostra
-                sample_error = 0.5 * (y - t)**2
+                sample_error = 0.5 * (t - y)**2
                 epoch_error += sample_error
 
                 # BACKPROPAGATION (cálculo dos gradientes)
                 # delta_k = (y - t) * derivada da tanh(yin)
-                delta_k = (y - t) * (1 - y**2)  # pois y = tanh(yin), deriv = (1 - tanh^2(yin))
+                delta_k = (t - y) * (1 - y**2)  # pois y = tanh(yin), deriv = (1 - tanh^2(yin))
 
                 # Camada de saída (oculta -> saída)
                 # gradientes: delta_wy (shape: (N,)) e delta_vy (escalar)
@@ -96,8 +96,8 @@ class Mlp:
                 delta_vy = self.learning_rate * delta_k
 
                 # Atualização
-                self.wy -= delta_wy
-                self.vy -= delta_vy
+                self.wy += delta_wy
+                self.vy += delta_vy
 
                 # Camada oculta (entrada -> oculta)
                 # erro que chega a cada neurônio oculto j: delta_in_j = wy[j] * delta_k
@@ -112,8 +112,8 @@ class Mlp:
                 delta_vi = self.learning_rate * delta_j      # shape: (N,)
 
                 # Atualiza
-                self.wi -= delta_wi
-                self.vi -= delta_vi
+                self.wi += delta_wi
+                self.vi += delta_vi
 
             # Armazena erro total da época
             error_history.append(epoch_error)
