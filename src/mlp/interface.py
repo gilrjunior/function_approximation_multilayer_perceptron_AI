@@ -11,7 +11,7 @@ class Interface:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Multilayer Perceptron")
-        self.root.geometry("1200x800")
+        self.root.geometry("1300x900")
         self.root.configure(bg="#F0F0F0")
 
         # Flag para indicar se está treinando
@@ -150,7 +150,7 @@ class Interface:
 
     def create_graphs(self):
         # Gráfico verdadeiro
-        self.fig_true, self.ax_true = plt.subplots(figsize=(5, 4))
+        self.fig_true, self.ax_true = plt.subplots(figsize=(6, 6))
         self.ax_true.set_title("Gráfico verdadeiro")
         self.ax_true.set_xlabel("X - Entrada")
         self.ax_true.set_ylabel("Y - Saída")
@@ -158,7 +158,7 @@ class Interface:
         self.canvas_true.get_tk_widget().pack()
 
         # Gráfico sobreposto
-        self.fig_overlap, self.ax_overlap = plt.subplots(figsize=(5, 4))
+        self.fig_overlap, self.ax_overlap = plt.subplots(figsize=(6, 6))
         self.ax_overlap.set_title("Gráfico Sobreposto (Verdadeiro vs MLP)")
         self.ax_overlap.set_xlabel("X - Entrada")
         self.ax_overlap.set_ylabel("Y - Saída")
@@ -166,7 +166,7 @@ class Interface:
         self.canvas_overlap.get_tk_widget().pack()
 
         # Gráfico de Erro x Épocas
-        self.fig_error, self.ax_error = plt.subplots(figsize=(5, 4))
+        self.fig_error, self.ax_error = plt.subplots(figsize=(6, 6))
         self.ax_error.set_title("Erro x Épocas")
         self.ax_error.set_xlabel("Épocas")
         self.ax_error.set_ylabel("Erro")
@@ -221,6 +221,8 @@ class Interface:
         # Constrói o gráfico de targets
         self.ax_true.clear()
         self.ax_true.set_title("Gráfico verdadeiro")
+        self.ax_true.set_xlabel("X - Entrada")
+        self.ax_true.set_ylabel("Y - Saída")
         self.ax_true.plot(self.mlp.inputs, self.mlp.targets, 'b-', label='Função Real')
         self.canvas_true.draw()
 
