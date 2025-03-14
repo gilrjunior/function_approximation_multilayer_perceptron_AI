@@ -180,7 +180,7 @@ class Mlp:
 
                 # delta_k: derivada do erro em relação à saída (para o neurônio de saída)
                 # (y - target) * derivada da tanh (1 - tanh^2(yin))
-                delta_k = (y - self.targets[i]) * (1 - np.tanh(yin) ** 2)
+                delta_k = (self.targets[i] - y) * (1 - np.tanh(yin) ** 2)
 
                 # Atualização dos pesos da camada de oculta x saída
                 for j in range(self.number_neurons):
@@ -190,8 +190,8 @@ class Mlp:
                     delta_vy = self.learning_rate * delta_k
 
                     # Atualiza pesos e bias
-                    self.wy[j] -= delta_wy
-                    self.vy -= delta_vy
+                    self.wy[j] += delta_wy
+                    self.vy += delta_vy
 
                 # Cada neurônio j na camada oculta recebe parte do erro vindo da saída
                 for j in range(self.number_neurons):
@@ -207,8 +207,8 @@ class Mlp:
                     delta_vi = self.learning_rate * delta_j
 
                     # Atualiza pesos e bias do neurônio j na camada oculta x entrada
-                    self.wi[j] -= delta_wi
-                    self.vi[j] -= delta_vi
+                    self.wi[j] += delta_wi
+                    self.vi[j] += delta_vi
 
             # Armazena erro total da época
             error_history.append(epoch_error)
