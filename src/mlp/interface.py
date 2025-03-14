@@ -220,6 +220,7 @@ class Interface:
 
         # Constrói o gráfico de targets
         self.ax_true.clear()
+        self.ax_true.set_title("Gráfico verdadeiro")
         self.ax_true.plot(self.mlp.inputs, self.mlp.targets, 'b-', label='Função Real')
         self.canvas_true.draw()
 
